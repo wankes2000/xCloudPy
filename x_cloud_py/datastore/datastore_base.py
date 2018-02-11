@@ -23,3 +23,7 @@ class DataStoreBase(object):
     @abstractmethod
     def delete_table(self, table_name, **kwargs):
         pass
+
+    @abstractmethod
+    def update_throughput(self, table_name, read_capacity_units, write_capacity_units, **kwargs):
+        pass

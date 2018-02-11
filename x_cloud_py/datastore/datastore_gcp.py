@@ -1,4 +1,4 @@
-from x_cloud_py.datasource.datastore_base import DataStoreBase
+from x_cloud_py.datastore.datastore_base import DataStoreBase
 from google.cloud import datastore
 
 import logging
@@ -59,6 +59,9 @@ class GoogleDataStore(DataStoreBase):
 
     def create_table(self, table_name, **kwargs):
         raise NotImplementedError("GoogleDataStore does not require to create tables before insert elements")
+
+    def update_throughput(self, table_name, read_capacity_units, write_capacity_units, **kwargs):
+        raise NotImplementedError("GoogleDataStore does not have concept of throughput")
 
     def get_element(self, table_name, key, **kwargs):
         """

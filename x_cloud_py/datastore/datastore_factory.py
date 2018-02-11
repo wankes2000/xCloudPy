@@ -1,5 +1,5 @@
-from x_cloud_py.datasource.datastore_aws import DynamoDBDataStore
-from x_cloud_py.datasource.datastore_gcp import GoogleDataStore
+from x_cloud_py.datastore.datastore_aws import DynamoDBDataStore
+from x_cloud_py.datastore.datastore_gcp import GoogleDataStore
 
 
 class DataStoreFactory(object):
