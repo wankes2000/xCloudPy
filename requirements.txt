@@ -1,0 +1,4 @@
+boto3==1.5.22
+google-cloud-datastore==1.4.0
+localstack==0.8.4
+google-cloud-storage==1.7.0
