@@ -5,3 +5,4 @@ coverage.xml
 .pypirc
 xunit-py35.xml
 *.pyc
+dist/
