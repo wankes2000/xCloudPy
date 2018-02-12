@@ -9,8 +9,49 @@ class S3FileStore(FileStoreBase):
     """
 
     def __init__(self, *args, **kwargs):
-        self.client = boto3.client('s3')
-        self.resource = boto3.resource('s3')
+        self.client = boto3.client('s3', **kwargs)
+        self.resource = boto3.resource('s3', **kwargs)
+
+    def delete_object(self, bucket_name, key, **kwargs):
+        """
+        Delete object from S3 with specified bucket and key
+        :param bucket_name:
+        :param key:
+        :param kwargs:
+        :return:
+        """
+        try:
+            basic_request = {
+                'Bucket': bucket_name,
+                'Key': key
+            }
+            delete_object_request = {**basic_request, **kwargs}
+            self.client.delete_object(**delete_object_request)
+        except Exception as e:
+            logging.exception(
+                'Exception in [S3FileStore.delete_object] with bucket_name {} , key {} and kwargs {}'.format(
+                    bucket_name,
+                    key,
+                    kwargs))
+            raise e
+
+    def upload_fileobj(self, bucket_name, key, file_obj):
+        """
+        Upload specified file to S3
+        :param bucket_name:
+        :param key:
+        :param file_obj:
+        :return:
+        """
+        try:
+            self.client.upload_fileobj(file_obj, bucket_name, key)
+        except Exception as e:
+            logging.exception(
+                'Exception in [S3FileStore.upload_fileobj] with bucket_name {} , key {} and file_obj {}'.format(
+                    bucket_name,
+                    key,
+                    file_obj))
+            raise e
 
     def download_fileobj(self, bucket_name, key, file_obj):
         """
@@ -88,7 +129,7 @@ class S3FileStore(FileStoreBase):
         :param file_name:
         """
         try:
-            self.resource.client.download_file(bucket_name, key, file_name)
+            self.resource.meta.client.download_file(bucket_name, key, file_name)
 
         except Exception as e:
             logging.exception(
@@ -134,7 +175,17 @@ class S3FileStore(FileStoreBase):
             raise e
 
     def upload_file(self, bucket_name, key, file_name):
-        return self.resource.meta.client.upload_file(file_name, bucket_name, key)
+        self.resource.meta.client.upload_file(file_name, bucket_name, key)
+
+    def delete_bucket(self, bucket_name):
+        try:
+            self.client.delete_bucket(
+                Bucket=bucket_name
+            )
+        except Exception as e:
+            logging.exception(
+                'Exception in [S3FileStore.delete_bucket] with bucket_name {}'.format(bucket_name))
+            raise e
 
     def create_bucket(self, bucket_name, **kwargs):
         try:

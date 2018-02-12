@@ -2,3 +2,6 @@
 .tox/
 .coverage
 coverage.xml
+.pypirc
+xunit-py35.xml
+*.pyc

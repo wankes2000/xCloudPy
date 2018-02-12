@@ -9,6 +9,10 @@ class FileStoreBase(object):
         pass
 
     @abstractmethod
+    def delete_bucket(self, bucket_name):
+        pass
+
+    @abstractmethod
     def list_files(self, bucket_name, prefix, **kwargs):
         pass
 
@@ -32,10 +36,10 @@ class FileStoreBase(object):
     def upload_file(self, bucket_name, key, file_name):
         pass
 
-    @staticmethod
+    @abstractmethod
     def upload_fileobj(self, bucket_name, key, file_obj):
         pass
 
-    @staticmethod
-    def detele_object(self, bucket_name, key):
+    @abstractmethod
+    def delete_object(self, bucket_name, key, **kwargs):
         pass
