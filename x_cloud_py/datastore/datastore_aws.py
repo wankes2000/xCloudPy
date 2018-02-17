@@ -8,6 +8,8 @@ class DynamoDBDataStore(DataStoreBase):
     """
     """
 
+
+
     def __init__(self, *args, **kwargs):
         self.client = boto3.client('dynamodb',**kwargs)
         self.resource = boto3.resource('dynamodb',**kwargs)
@@ -29,6 +31,25 @@ class DynamoDBDataStore(DataStoreBase):
             logging.exception(
                 'Exception in [DynamoDBDataSource.put_element] with table_name {} and item {}'.format(table_name, item))
             raise e
+
+    def put_elements(self, table_name, items, **kwargs):
+        """
+        Put multiple elements in dynamoDB table in batch mode
+        :param table_name:
+        :param items:
+        :param kwargs:
+        :return:
+        """
+        try:
+            table = self.resource.Table(table_name)
+            with table.batch_writer() as batch:
+                for item in items:
+                    batch.put_item(Item=item)
+        except Exception as e:
+            logging.exception(
+                'Exception in [DynamoDBDataSource.put_elements] with table_name {} and item size {}'.format(table_name, str(len(items))))
+            raise e
+
 
     def get_element(self, table_name, key, **kwargs):
         """

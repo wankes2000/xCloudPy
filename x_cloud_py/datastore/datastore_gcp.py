@@ -6,7 +6,7 @@ import logging
 
 class GoogleDataStore(DataStoreBase):
     def __init__(self, *args, **kwargs):
-        self.client = datastore.Client(project=kwargs.get('project'))
+        self.client = datastore.Client(**kwargs)
 
     def delete_table(self, table_name, **kwargs):
         """
@@ -19,7 +19,11 @@ class GoogleDataStore(DataStoreBase):
             query = self.client.query(kind=table_name)
             query.keys_only()
             keys_to_delete = [entity.key for entity in query.fetch()]
-            self.client.delete_multi(keys_to_delete)
+            item_chunks = GoogleDataStore.__chunks(keys_to_delete, 500)
+            for chunk in item_chunks:
+                with self.client.batch() as batch:
+                    for item in chunk:
+                        batch.delete(item)
         except Exception as e:
             logging.exception(
                 'Exception in [GoogleDataStore.delete_table] with table_name {} '.format(table_name))
@@ -49,19 +53,54 @@ class GoogleDataStore(DataStoreBase):
         :param kwargs:
         :return:
         """
-        complete_key = self.client.key(table_name, kwargs['key'])
+        key_field = kwargs.get('key_field', 'key')
+        complete_key = self.client.key(table_name, item[key_field])
 
         entity = datastore.Entity(key=complete_key)
-
         entity.update(item)
+        entity.pop(key_field, None)
 
         self.client.put(entity)
+
+    def put_elements(self, table_name, items, **kwargs):
+        """
+        Put multiple entities in a Google Datastore Table
+        :param table_name:
+        :param items:
+        :param kwargs:
+        :return:
+        """
+        try:
+            key_field = kwargs.get('key_field', 'key')
+            item_chunks = GoogleDataStore.__chunks(items, 500)
+            for chunk in item_chunks:
+                with self.client.batch() as batch:
+                    for item in chunk:
+                        complete_key = self.client.key(table_name, item[key_field])
+
+                        entity = datastore.Entity(key=complete_key)
+                        entity.update(item)
+                        entity.pop(key_field, None)
+                        batch.put(entity)
+
+
+        except Exception as e:
+            logging.exception(
+                'Exception in [GoogleDataStore.put_elements] with table_name {}'.format(table_name))
+            raise e
 
     def create_table(self, table_name, **kwargs):
         raise NotImplementedError("GoogleDataStore does not require to create tables before insert elements")
 
     def update_throughput(self, table_name, read_capacity_units, write_capacity_units, **kwargs):
         raise NotImplementedError("GoogleDataStore does not have concept of throughput")
+
+    @staticmethod
+    def __chunks(chunkable, n):
+        """ Yield successive n-sized chunks from l.
+        """
+        for i in range(0, len(chunkable), n):
+            yield chunkable[i:i + n]
 
     def get_element(self, table_name, key, **kwargs):
         """
@@ -70,5 +109,18 @@ class GoogleDataStore(DataStoreBase):
         :param kwargs:
         :return:
         """
-        complete_key = self.client.key(table_name, key)
-        return self.client.get(complete_key)
+        try:
+            key_field = kwargs.get('key_field', 'key')
+            complete_key = self.client.key(table_name, key)
+
+            entity = self.client.get(complete_key)
+
+            item = dict(entity.items())
+            item[key_field] = entity.key.id_or_name
+
+            return item
+
+        except Exception as e:
+            logging.exception(
+                'Exception in [GoogleDataStore.get_element] with table_name {} and key {}'.format(table_name, key))
+            raise Exception(e)

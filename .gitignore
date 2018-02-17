@@ -6,3 +6,4 @@ coverage.xml
 xunit-py35.xml
 *.pyc
 dist/
+xCloudPy.egg-info/

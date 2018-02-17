@@ -13,6 +13,10 @@ class DataStoreBase(object):
         pass
 
     @abstractmethod
+    def put_elements(self, table_name, items, **kwargs):
+        pass
+
+    @abstractmethod
     def get_element(self, table_name, key, **kwargs):
         pass
 

@@ -3,17 +3,21 @@ from x_cloud_py.filestore.filestore_aws import S3FileStore
 import unittest
 import tempfile
 from botocore.exceptions import ClientError
+import os
 
 
-class TestUnitFileStoreAws(unittest.TestCase):
+class TestIntegrationFileStoreAws(unittest.TestCase):
     __BUCKET_NAME = 'python-bucket-test'
     __FILE_KEY = 'test-key'
     __FILE_CONTENT = b'object'
 
     @classmethod
     def setUpClass(cls):
-        infra.start_infra(async=False, apis=list('S3'))
-        cls.S3_FileStore = S3FileStore({'endpoint-url': 'http://localhost:4572'})
+
+        os.environ['AWS_SECRET_ACCESS_KEY'] = 'foo'
+        os.environ['AWS_ACCESS_KEY_ID'] = 'bar'
+        os.environ['DATA_DIR'] = '/tmp/localstack'
+        cls.S3_FileStore = S3FileStore(**{'endpoint_url': 'http://localhost:4572'})
 
     @classmethod
     def tearDownClass(cls):
@@ -59,9 +63,6 @@ class TestUnitFileStoreAws(unittest.TestCase):
         temp2 = tempfile.TemporaryFile()
         self.assertRaises(ClientError, self.S3_FileStore.download_fileobj, self.__BUCKET_NAME, 'invalid-key', temp2)
         temp2.close()
-
-    def test_007_given_already_exist_bucket_when_call_create_bucket_then_exception_is_throw(self):
-        self.assertRaises(ClientError, self.S3_FileStore.create_bucket, 'test')
 
     def test_008_given_valid_path_when_call_donwload_file_then_file_is_downloaded(self):
         temp = tempfile.NamedTemporaryFile()
