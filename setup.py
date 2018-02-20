@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='xCloudPy',
     packages=find_packages(exclude=['tests*']),  # this must be the same as the name above
-    version='0.2.0',
+    version='0.2.1',
     description='Public cloud libs basic wrapper',
     author='Arturo Martinez',
     author_email='wankes2000@gmail.com',
