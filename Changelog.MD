@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.1] - 2018-02-21
+
+* Fix FileStore Factory method
+
 ## [0.2.0] - 2018-02-17
 
 * Add put_multi in implemented datastores
