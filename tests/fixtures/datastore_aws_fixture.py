@@ -17,6 +17,38 @@ class DataStoreAwsFixture(object):
         }
 
     @staticmethod
+    def get_create_table_request(table_name,hash_key,range_key=None):
+        request = {
+            'TableName': table_name,
+            'AttributeDefinitions': [{
+                'AttributeName': hash_key,
+                'AttributeType': 'S'
+            }],
+            'KeySchema': [
+                {
+                    'AttributeName': hash_key,
+                    'KeyType': 'HASH'
+                }
+            ],
+            'ProvisionedThroughput': {
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1
+            }
+        }
+        if range_key:
+            request['KeySchema'].append({
+                'AttributeName': range_key,
+                'KeyType': 'RANGE'
+            })
+            request['AttributeDefinitions'].append({
+                'AttributeName': range_key,
+                'AttributeType': 'S'
+            })
+
+        return request
+
+
+    @staticmethod
     def create_item_with_hash_key_and_range_key(hash_key, hash_key_value, range_key=None, range_key_value=None):
         item = {
             hash_key: hash_key_value,

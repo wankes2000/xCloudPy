@@ -9,6 +9,10 @@ class DataStoreBase(object):
         pass
 
     @abstractmethod
+    def query(self, table_name, query_params):
+        pass
+
+    @abstractmethod
     def put_element(self, table_name, item, **kwargs):
         pass
 
@@ -26,6 +30,10 @@ class DataStoreBase(object):
 
     @abstractmethod
     def delete_table(self, table_name, **kwargs):
+        pass
+
+    @abstractmethod
+    def list_tables(self):
         pass
 
     @abstractmethod
