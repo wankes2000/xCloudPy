@@ -11,6 +11,8 @@ python:
 # command to install dependencies
 services:
   - docker
+env:
+  - FORCE_NONINTERACTIVE=true
 before_install:
   - docker pull google/cloud-sdk
   - docker run -d -p 8282:8282 google/cloud-sdk gcloud beta emulators datastore start --no-store-on-disk --project=test --host-port 0.0.0.0:8282
