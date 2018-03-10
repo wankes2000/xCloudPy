@@ -29,6 +29,14 @@ class GoogleDataStore(DataStoreBase):
                 'Exception in [GoogleDataStore.delete_table] with table_name {} '.format(table_name))
             raise Exception(e)
 
+    def query(self, table_name, query_params):
+        # TODO Implement method
+        raise NotImplementedError("Not yet implemented")
+
+    def list_tables(self):
+        # TODO Implement method
+        raise NotImplementedError("Not yet implemented")
+
     def delete_element(self, table_name, key, **kwargs):
         """
         Delete one entity from datastore using kind and key

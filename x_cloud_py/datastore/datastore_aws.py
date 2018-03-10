@@ -1,5 +1,7 @@
 from x_cloud_py.datastore.datastore_base import DataStoreBase
-
+from functools import reduce
+from operator import and_
+from boto3.dynamodb.conditions import Key
 import boto3
 import logging
 
@@ -11,8 +13,8 @@ class DynamoDBDataStore(DataStoreBase):
 
 
     def __init__(self, *args, **kwargs):
-        self.client = boto3.client('dynamodb',**kwargs)
-        self.resource = boto3.resource('dynamodb',**kwargs)
+        self.client = boto3.client('dynamodb', **kwargs)
+        self.resource = boto3.resource('dynamodb', **kwargs)
 
     def put_element(self, table_name, item, **kwargs):
         """
@@ -47,9 +49,74 @@ class DynamoDBDataStore(DataStoreBase):
                     batch.put_item(Item=item)
         except Exception as e:
             logging.exception(
-                'Exception in [DynamoDBDataSource.put_elements] with table_name {} and item size {}'.format(table_name, str(len(items))))
+                'Exception in [DynamoDBDataSource.put_elements] with table_name {} and item size {}'.format(table_name,
+                                                                                                            str(len(
+                                                                                                                items))))
             raise e
 
+    def query(self, table_name, query_params):
+        """
+        Query DynamoDB table
+        :param table_name: str
+        :param query_params: list of dicts
+            [
+                {
+                    'field_name': 'field',
+                    'operator': 'eq|gt|gte|lt|lte|begins_with'
+                    'value': 'value'
+                },..
+            ]
+        :return:
+        """
+
+        try:
+            table = self.resource.Table(table_name)
+            basic_request = {
+                'KeyConditionExpression': DynamoDBDataStore.__transform_query_params(query_params)
+            }
+            response = table.query(**basic_request)
+            final_response = list()
+            for i in response['Items']:
+                final_response.append(i)
+
+            while 'LastEvaluatedKey' in response:
+                basic_request['ExclusiveStartKey'] = response['LastEvaluatedKey']
+                response = table.query(
+                    **basic_request
+                )
+
+                for i in response['Items']:
+                    final_response.append(i)
+
+            logging.info('Query return {} elements'.format(len(final_response)))
+            return final_response
+        except Exception as e:
+            logging.exception(
+                'Exception in [DynamoDBDataSource.query] with table_name {} and query_params {}'.format(table_name,
+                                                                                                        query_params))
+            raise e
+
+    @staticmethod
+    def __transform_query_params(query_params):
+        exp_list = [DynamoDBDataStore.__map_function_query_param(x) for x in query_params]
+        return reduce(and_, exp_list)
+
+    @staticmethod
+    def __map_function_query_param(query_param):
+        method_name = getattr(Key(query_param['field_name']), query_param['operator'])
+        return method_name(query_param['value'])
+
+    def list_tables(self):
+        """
+        List dynamoDB tables
+        :return:
+        """
+        try:
+            return self.client.list_tables()['TableNames']
+        except Exception as e:
+            logging.exception(
+                'Exception in [DynamoDBDataSource.list_tables]')
+            raise e
 
     def get_element(self, table_name, key, **kwargs):
         """
