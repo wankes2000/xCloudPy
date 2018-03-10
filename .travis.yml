@@ -17,7 +17,7 @@ before_install:
   - docker pull google/cloud-sdk
   - docker run -d -p 8282:8282 google/cloud-sdk gcloud beta emulators datastore start --no-store-on-disk --project=test --host-port 0.0.0.0:8282
   - pip install -r requirements-test.txt
-  - localstack start --docker
+  - localstack start --docker &
 install:
   - pip install .
   - pip install -r requirements.txt
