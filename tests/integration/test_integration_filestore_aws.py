@@ -21,7 +21,7 @@ class TestIntegrationFileStoreAws(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        infra.stop_infra()
+        pass
 
     def test_001_given_valid_bucket_name_when_call_create_bucket_then_bucket_is_created(self):
         self.S3_FileStore.create_bucket(self.__BUCKET_NAME)

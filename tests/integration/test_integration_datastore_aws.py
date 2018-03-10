@@ -18,7 +18,7 @@ class TestIntegrationDataStoreAws(unittest.TestCase):
         os.environ['AWS_SECRET_ACCESS_KEY'] = 'foo'
         os.environ['AWS_ACCESS_KEY_ID'] = 'bar'
         os.environ['DATA_DIR'] = '/tmp/localstack'
-        cls.__dynamodb_datastore = DynamoDBDataStore(**{'endpoint_url': 'http://localhost:4569'})
+        cls.__dynamodb_datastore = DynamoDBDataStore(**{'endpoint_url': 'http://localhost:4569','region_name':'eu-west-1'})
         create_table_request = DataStoreAwsFixture.get_create_table_request(cls.__TABLE_NAME, cls.__HASH_KEY,
                                                                             cls.__RANGE_KEY)
         cls.__dynamodb_datastore.create_table(cls.__TABLE_NAME, **create_table_request)
