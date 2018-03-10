@@ -9,9 +9,15 @@ python:
   - "pypy2.7"
   - "pypy3.5"
 # command to install dependencies
+services:
+  - docker
+before_install:
+  - docker pull google/cloud-sdk
+  - docker run -p 8282:8282 google/cloud-sdk gcloud beta emulators datastore start --no-store-on-disk --project=test --host-port 0.0.0.0:8282
+  - pip install -r requirements-test.txt
+  - localstack start --docker
 install:
   - pip install .
   - pip install -r requirements.txt
-  - pip install -r requirements-test.txt
 # command to run tests
 script: pytest
