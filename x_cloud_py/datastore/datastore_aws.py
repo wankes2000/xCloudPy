@@ -2,7 +2,6 @@ from x_cloud_py.datastore.datastore_base import DataStoreBase
 from functools import reduce
 from operator import and_
 from boto3.dynamodb.conditions import Key
-from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 
 import boto3
 import logging
