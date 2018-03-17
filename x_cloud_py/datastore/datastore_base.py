@@ -25,6 +25,10 @@ class DataStoreBase(object):
         pass
 
     @abstractmethod
+    def get_elements(self, table_name, keys, **kwargs):
+        pass
+
+    @abstractmethod
     def delete_element(self, table_name, key, **kwargs):
         pass
 

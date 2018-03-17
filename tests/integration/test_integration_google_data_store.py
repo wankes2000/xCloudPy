@@ -38,3 +38,18 @@ class TestIntegrationGoogleDataStore(unittest.TestCase):
         items = DatastoreGoogleFixture.generate_multiple_items(1050)
 
         self.datastore.put_elements(table_name=self.__TEST_TABLE, items=items)
+
+    def test_when_call_list_tables_then_list_is_returned(self):
+        result = self.datastore.list_tables()
+        self.assertEqual(result,[self.__TEST_TABLE])
+
+    def test_given_valid_keys_when_call_get_elements_then_return_elements(self):
+        elements = [
+            {"a": "b", "key": "500000"},
+            {"a": "b", "key": "600000"}
+        ]
+        self.datastore.put_elements(table_name=self.__TEST_TABLE, items=elements)
+
+        result = self.datastore.get_elements(table_name=self.__TEST_TABLE,keys=["500000","600000"])
+        self.assertEqual(elements,result)
+

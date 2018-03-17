@@ -5,6 +5,8 @@ import logging
 
 
 class GoogleDataStore(DataStoreBase):
+
+
     def __init__(self, *args, **kwargs):
         self.client = datastore.Client(**kwargs)
 
@@ -34,8 +36,19 @@ class GoogleDataStore(DataStoreBase):
         raise NotImplementedError("Not yet implemented")
 
     def list_tables(self):
-        # TODO Implement method
-        raise NotImplementedError("Not yet implemented")
+        """
+        Return datastore kinds names
+        :return:
+        """
+        try:
+            query = self.client.query(kind='__kind__')
+            query.keys_only()
+
+            return [entity.key.id_or_name for entity in query.fetch()]
+        except Exception as e:
+            logging.exception(
+                'Exception in [GoogleDataStore.list_tables]')
+            raise Exception(e)
 
     def delete_element(self, table_name, key, **kwargs):
         """
@@ -131,4 +144,31 @@ class GoogleDataStore(DataStoreBase):
         except Exception as e:
             logging.exception(
                 'Exception in [GoogleDataStore.get_element] with table_name {} and key {}'.format(table_name, key))
+            raise Exception(e)
+
+    def get_elements(self, table_name, keys, **kwargs):
+        """
+        Return elements by keys
+        :param table_name:
+        :param keys:
+        :param kwargs:
+        :return:
+        """
+        try:
+            key_field = kwargs.get('key_field', 'key')
+            complete_key_list = list()
+            for key in keys:
+                complete_key_list.append(self.client.key(table_name, key))
+
+            entities = self.client.get_multi(complete_key_list)
+            response = list()
+            for entity in entities:
+                item = dict(entity.items())
+                item[key_field] = entity.key.id_or_name
+                response.append(item)
+            return response
+
+        except Exception as e:
+            logging.exception(
+                'Exception in [GoogleDataStore.get_elements] with table_name {} and keys {}'.format(table_name, keys))
             raise Exception(e)
