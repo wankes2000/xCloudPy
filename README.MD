@@ -1,4 +1,7 @@
-# Description
+# xCloudPy
+[![Build Status](https://travis-ci.org/wankes2000/xCloudPy.svg?branch=master)](https://travis-ci.org/wankes2000/xCloudPy) [![Coverage Status](https://coveralls.io/repos/github/wankes2000/xCloudPy/badge.svg)](https://coveralls.io/github/wankes2000/xCloudPy)
+
+## Description
 
 ## Tests
 
