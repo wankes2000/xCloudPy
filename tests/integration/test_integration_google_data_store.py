@@ -38,3 +38,7 @@ class TestIntegrationGoogleDataStore(unittest.TestCase):
         items = DatastoreGoogleFixture.generate_multiple_items(1050)
 
         self.datastore.put_elements(table_name=self.__TEST_TABLE, items=items)
+
+    def test_when_call_list_tables_then_list_is_returned(self):
+        result = self.datastore.list_tables()
+        self.assertEqual(result,[self.__TEST_TABLE])

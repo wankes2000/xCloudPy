@@ -2,6 +2,8 @@ from x_cloud_py.datastore.datastore_base import DataStoreBase
 from functools import reduce
 from operator import and_
 from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
+
 import boto3
 import logging
 
@@ -9,8 +11,6 @@ import logging
 class DynamoDBDataStore(DataStoreBase):
     """
     """
-
-
 
     def __init__(self, *args, **kwargs):
         self.client = boto3.client('dynamodb', **kwargs)
@@ -32,6 +32,30 @@ class DynamoDBDataStore(DataStoreBase):
         except Exception as e:
             logging.exception(
                 'Exception in [DynamoDBDataSource.put_element] with table_name {} and item {}'.format(table_name, item))
+            raise e
+
+    def get_elements(self, table_name, keys, **kwargs):
+        """
+        Retrieve dynamodb elements by his key
+        :param table_name:
+        :param keys: list of [{'key':'value'}]
+        :param kwargs:
+        :return:
+        """
+        try:
+            request = dict()
+            request['RequestItems'] = {
+                table_name: {
+                    'Keys': keys
+                }
+            }
+
+            response = self.resource.batch_get_item(**request)
+            return response['Responses'][table_name]
+        except Exception as e:
+            logging.exception(
+                'Exception in [DynamoDBDataSource.get_elements] with table_name {} and keys {}'.format(table_name,
+                                                                                                       keys))
             raise e
 
     def put_elements(self, table_name, items, **kwargs):

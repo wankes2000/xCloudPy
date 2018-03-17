@@ -34,8 +34,19 @@ class GoogleDataStore(DataStoreBase):
         raise NotImplementedError("Not yet implemented")
 
     def list_tables(self):
-        # TODO Implement method
-        raise NotImplementedError("Not yet implemented")
+        """
+        Return datastore kinds names
+        :return:
+        """
+        try:
+            query = self.client.query(kind='__kind__')
+            query.keys_only()
+
+            return [entity.key.id_or_name for entity in query.fetch()]
+        except Exception as e:
+            logging.exception(
+                'Exception in [GoogleDataStore.list_tables]')
+            raise Exception(e)
 
     def delete_element(self, table_name, key, **kwargs):
         """
