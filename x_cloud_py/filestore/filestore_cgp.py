@@ -6,8 +6,6 @@ from google.cloud.storage.blob import Blob
 
 
 class GoogleCloudStorage(FileStoreBase):
-
-
     def __init__(self, *args, **kwargs):
         self.client = Client(**kwargs)
 

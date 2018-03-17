@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+* Add get elements method to datastores
+
 ## [0.3.0] - 2018-03-10
 
 * Add query method and list tables method to datastores
