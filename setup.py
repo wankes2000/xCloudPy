@@ -10,7 +10,7 @@ setup(
     url='https://github.com/wankes2000/xCloudPy',  # use the URL to the github repo
     download_url='https://github.com/wankes2000/xCloudPy/archive/0.3.0.tar.gz',
     install_requires=['boto3==1.5.22', 'google-cloud-datastore==1.4.0', 'google-cloud-storage==1.7.0'],
-    tests_require=['mock','nose==1.3.7','coverage==4.0.3', 'localstack==0.8.5'],
+    tests_require=['mock','nose==1.3.7','coverage==4.0.3', 'localstack==0.12.11'],
     keywords=['aws', 'cloud', 'google', 'gcp'],  # arbitrary keywords
     classifiers=[],
 )
